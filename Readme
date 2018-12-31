@@ -1,0 +1,52 @@
+1. Send sms Via Twilio
+ - the preferable solution com.twilio.http.TwilioRestClient
+    We can create REST client for each user.
+    com.twilio.http.Response contains information about created message in case of successful request.
+    {
+    "sid":"SMf668ac1161164c0698e9b9c5ecea4d13",
+    "date_created":"Mon, 31 Dec 2018 09:51:13 +0000",
+    "date_updated":"Mon, 31 Dec 2018 09:51:13 +0000",
+    "date_sent":null,
+    "account_sid":"AC311dff67137d97631919803846039968",
+    "to":"+380502956653",
+    "from":"+18634501725",
+    "messaging_service_sid":null,
+    "body":"Sent from your Twilio trial account - \u0442\u0430\u043a\u0441\u0438 777 \u0437\u0432\u043e\u043d\u0438\u0442\u0435 \u0431\u0435\u0441\u043f\u043b\u0430\u0442\u043d\u043e",
+    "status":"queued",
+    "num_segments":"1",
+    "num_media":"0",
+    "direction":"outbound-api",
+    "api_version":"2010-04-01",
+    "price":null,
+    "price_unit":"USD",
+    "error_code":null,
+    "error_message":null,
+    "uri":"/2010-04-01/Accounts/AC311dff67137d97631919803846039968/Messages/SMf668ac1161164c0698e9b9c5ecea4d13.json",
+    "subresource_uris":{
+    "media":"/2010-04-01/Accounts/AC311dff67137d97631919803846039968/Messages/SMf668ac1161164c0698e9b9c5ecea4d13/Media.json"
+    }
+    }
+
+    Or if request failed it will contain error code which will help us indicate the problem
+    {
+    "code":21614,
+    "message":"To number: +380382749431, is not a mobile number",
+    "more_info":"https://www.twilio.com/docs/errors/21614",
+    "status":400
+    }
+
+   The error codes for:
+   Blacklist violation (aka DNC) - 30004, https://www.twilio.com/docs/api/errors/30004, also 21216, 32216
+   A landline phone number that is not sms capable - 30006, 60205, 21614
+
+2. Receiving sms
+ - Webhook can be configured on the UI - https://www.twilio.com/console/phone-numbers/incoming,
+   also you can change it using Twilio REST API - https://www.twilio.com/docs/phone-numbers/api/incoming-phone-numbers
+
+   Twilio sends POST request to the webhook using "application/x-www-form-urlencoded" content type
+   The list of the params you can see on the picture "webhook_request_params.png"
+
+
+3. Admins can create and manage subAccounts using their ACCOUNT SID and AUTH TOKEN
+ - https://www.twilio.com/docs/iam/api/account?code-sample=code-list-all-active-accounts&code-language=Java&code-sdk-version=6.x#create-an-account-resource
+
