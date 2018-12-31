@@ -37,7 +37,7 @@
 
    The error codes for:
    Blacklist violation (aka DNC) - 30004, https://www.twilio.com/docs/api/errors/30004, also 21216, 32216
-   A landline phone number that is not sms capable - 30006, 60205, 21614
+   A landline phone number that is not sms capable - 30006, 60205, 21614, 3005
 
 2. Receiving sms
  - Webhook can be configured on the UI - https://www.twilio.com/console/phone-numbers/incoming,

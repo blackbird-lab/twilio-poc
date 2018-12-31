@@ -26,12 +26,10 @@ public class SmsService {
     @Autowired
     private RestTemplate restTemplate;
     private String MESSAGES_ENDPOINT = "/Accounts/AC311dff67137d97631919803846039968/Messages.json";
-
-    @Value("${twilio.api.url}")
-    private String REST_API;
-
     private static final String ACCOUNT_SID = "AC311dff67137d97631919803846039968";
     private static final String AUTH_TOKEN = "a1b5f305a567b72f24db663842558162";
+    @Value("${twilio.api.url}")
+    private String REST_API;
 
     static {
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
