@@ -1,5 +1,8 @@
 package com.blackbird.service;
 
+import com.blackbird.dto.MessageDto;
+import com.blackbird.repository.MessageRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twilio.exception.TwilioException;
 import com.twilio.http.Request;
 import com.twilio.http.Response;
@@ -9,6 +12,7 @@ import com.twilio.type.PhoneNumber;
 import com.twilio.Twilio;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -17,14 +21,18 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 
 @Slf4j
 @Service
-public class SmsService {
+public class MessageService {
 
-    @Autowired
     private RestTemplate restTemplate;
+    private MessageRepository repository;
+    private ObjectMapper objectMapper;
+    private ModelMapper modelMapper;
+
     private String MESSAGES_ENDPOINT = "/Accounts/AC311dff67137d97631919803846039968/Messages.json";
     private static final String ACCOUNT_SID = "AC311dff67137d97631919803846039968";
     private static final String AUTH_TOKEN = "a1b5f305a567b72f24db663842558162";
@@ -33,6 +41,15 @@ public class SmsService {
 
     static {
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+    }
+
+    @Autowired
+    public MessageService(MessageRepository repository, RestTemplate restTemplate,
+                          ObjectMapper objectMapper, ModelMapper modelMapper) {
+        this.repository = repository;
+        this.restTemplate = restTemplate;
+        this.objectMapper = objectMapper;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -53,14 +70,20 @@ public class SmsService {
      * {@link Response} contains information about created message in case of successful request
      * or if request failed it will contain error code which help us indicate the problem
      */
-    public String sendMessageViaTwilioRestClient(String to, String from, String text) {
+    public MessageDto sendMessageViaTwilioRestClient(String to, String from, String text) {
         TwilioRestClient client = new TwilioRestClient.Builder(ACCOUNT_SID, AUTH_TOKEN).build();
         Request request = new Request(com.twilio.http.HttpMethod.POST, REST_API + MESSAGES_ENDPOINT);
         request.addPostParam("Body", text);
         request.addPostParam("To", to);
         request.addPostParam("From", from);
-        Response response = client.request(request);
-        return response.getContent();
+        MessageDto message = null;
+        try {
+            message = objectMapper.readValue(client.request(request).getContent(), MessageDto.class);
+            repository.save(modelMapper.map(message, com.blackbird.entity.Message.class));
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+        return message;
     }
 
     /**

@@ -20,6 +20,9 @@
         <lombok.version>1.18.0</lombok.version>
         <twilio.version>7.33.0</twilio.version>
         <spring-boot.version>2.1.0.RELEASE</spring-boot.version>
+        <modelmapper.version>2.3.2</modelmapper.version>
+        <httpclient.version>4.5.3</httpclient.version>
+        <postgresql.version>42.0.0</postgresql.version>
     </properties>
 
     <dependencies>
@@ -43,9 +46,25 @@
         </dependency>
 
         <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>${modelmapper.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.3</version>
+            <version>${httpclient.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
         </dependency>
     </dependencies>
 

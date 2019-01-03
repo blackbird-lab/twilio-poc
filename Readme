@@ -1,3 +1,9 @@
+For running app execute:
+mvn clean install
+docker-compose build
+docker-compose up
+
+Results of Twilio REST API investigation:
 1. Send sms Via Twilio
  - the preferable solution com.twilio.http.TwilioRestClient
     We can create REST client for each user.
@@ -49,4 +55,6 @@
 
 3. Admins can create and manage subAccounts using their ACCOUNT SID and AUTH TOKEN
  - https://www.twilio.com/docs/iam/api/account?code-sample=code-list-all-active-accounts&code-language=Java&code-sdk-version=6.x#create-an-account-resource
+
+4. By default, number of retries using TwilioRestClient is 3, with delay 100 milliseconds
 

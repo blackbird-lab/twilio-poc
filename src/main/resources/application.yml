@@ -1,3 +1,14 @@
 twilio:
   api:
     url: https://api.twilio.com/2010-04-01
+spring:
+  datasource:
+    url: jdbc:postgresql://db:5432/mytestdb
+    username: postgres
+    password: admin
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+    ddl-auto: create
