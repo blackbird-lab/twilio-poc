@@ -4,9 +4,8 @@ docker-compose build
 docker-compose up
 
 Results of Twilio REST API investigation:
-1. Send sms Via Twilio
- - the preferable solution com.twilio.http.TwilioRestClient
-    We can create REST client for each user.
+1. Send sms Via TwilioRestClient or using Spring RestTemplate
+ - We can create REST client for each user using com.twilio.http.TwilioRestClient
     com.twilio.http.Response contains information about created message in case of successful request.
     {
     "sid":"SMf668ac1161164c0698e9b9c5ecea4d13",
@@ -45,11 +44,13 @@ Results of Twilio REST API investigation:
    Blacklist violation (aka DNC) - 30004, https://www.twilio.com/docs/api/errors/30004, also 21216, 32216
    A landline phone number that is not sms capable - 30006, 60205, 21614, 3005
 
+  - For Spring REST in case of error, HttpClientErrorException will contain error information in Body part
+
 2. Receiving sms
  - Webhook can be configured on the UI - https://www.twilio.com/console/phone-numbers/incoming,
    also you can change it using Twilio REST API - https://www.twilio.com/docs/phone-numbers/api/incoming-phone-numbers
 
-   Twilio sends POST request to the webhook using "application/x-www-form-urlencoded" content type
+ - Twilio sends POST request to the webhook using "application/x-www-form-urlencoded" content type
    The list of the params you can see on the picture "webhook_request_params.png"
 
 

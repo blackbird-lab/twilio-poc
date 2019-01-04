@@ -19,6 +19,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -66,9 +67,9 @@ public class MessageService {
     }
 
     /**
-     * Current preferable solution. We can create REST client for each user.
+     * We can create TwilioRestClient client for each user.
      * {@link Response} contains information about created message in case of successful request
-     * or if request failed it will contain error code which help us indicate the problem
+     * or if request fails it will contain error code which help us indicate the problem
      */
     public MessageDto sendMessageViaTwilioRestClient(String to, String from, String text) {
         TwilioRestClient client = new TwilioRestClient.Builder(ACCOUNT_SID, AUTH_TOKEN).build();
@@ -88,16 +89,24 @@ public class MessageService {
 
     /**
      * Using Spring RESTTemplate
+     * In case of exception HttpClientErrorException contains number of error in Body part
      */
     public void sendMessageViaSpringREST(String to, String from, String text) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("To", to);
         params.add("From", from);
         params.add("Body", text);
-        ResponseEntity<String> responseEntity = restTemplate.exchange(REST_API + MESSAGES_ENDPOINT,
-                HttpMethod.POST,
-                new HttpEntity<>(params, createBasicAuthorisation(ACCOUNT_SID, AUTH_TOKEN)),
-                String.class);
+        try {
+            ResponseEntity<String> responseEntity = restTemplate.exchange(REST_API + MESSAGES_ENDPOINT,
+                    HttpMethod.POST,
+                    new HttpEntity<>(params, createBasicAuthorisation(ACCOUNT_SID, AUTH_TOKEN)),
+                    String.class);
+            log.debug("Response entity: " + responseEntity.getBody());
+        } catch (HttpClientErrorException e) {
+            log.error(e.getResponseBodyAsString());
+            log.error(e.getMessage(), e);
+        }
+
     }
 
     private HttpHeaders createBasicAuthorisation(String username, String password) {
