@@ -1,0 +1,83 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: db
+  name: db
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_DB
+          value: mytestdb
+        - name: POSTGRES_PASSWORD
+          value: admin
+        image: postgres:9.5
+        name: db
+        ports:
+        - containerPort: 5432
+        resources: {}
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:  
+  labels:
+    app: db
+  name: db
+spec:
+  ports:
+  - name: "5432"
+    port: 5432
+    targetPort: 5432
+  selector:
+    app: db
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:  
+  labels:
+    app: twiliopoc-app
+  name: twiliopoc-app
+spec:
+  replicas: 1  
+  template:
+    metadata:
+      labels:
+        app: twiliopoc-app
+    spec:
+      containers:
+      - env:
+        - name: DB_URL
+          value: jdbc:postgresql://db;
+        image: iege/twiliopoc_app 
+        name: app	
+        ports:
+        - containerPort: 8080
+        - containerPort: 8000
+        resources: {}
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: twiliopoc-app
+  name: twiliopoc-app
+spec:
+  type: LoadBalancer
+  ports:
+  - name: "8080"
+    port: 8080
+    targetPort: 8080
+  - name: "8000"
+    port: 8000
+    targetPort: 8000
+  selector:
+    app: twiliopoc-app
+
